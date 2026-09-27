@@ -6773,7 +6773,12 @@ _main(const macho_header* mainExecutableMH, uintptr_t mainExecutableSlide,
 	switch (gProcessInfo->platform) {
 #if (TARGET_OS_OSX && TARGET_CPU_ARM64)
 		case PLATFORM_IOS:
+#if !defined(DARLING)
 			sClosureMode = ClosureMode::On; // <rdar://problem/56792308> Run iOS apps on macOS in dyld3 mode
+#endif
+			// DARLING: keep iOS binaries on the dyld2 path like macOS ones. The dyld3 launch path
+			// runs libSystem's initializer without Darling's dyld2 hooks (__dyld_get_elfcalls,
+			// __dyld_get_tsd_base), and mach_driver_init() faults.
 			[[clang::fallthrough]];
 #endif
 		case PLATFORM_MACCATALYST:

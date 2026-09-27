@@ -221,6 +221,10 @@ const GradedArchs GradedArchs::i386              = { {{GRADE_i386,    1}} };
 const GradedArchs GradedArchs::x86_64            = { {{GRADE_x86_64,  1}} };
 const GradedArchs GradedArchs::x86_64h           = { {{GRADE_x86_64h, 2}, {GRADE_x86_64, 1}} };
 const GradedArchs GradedArchs::arm64             = { {{GRADE_arm64,   1}} };
+#if defined(DARLING)
+// DARLING arm64e compat: accept arm64e with higher grade, arm64 as fallback
+const GradedArchs GradedArchs::arm64_darling    = { {{CPU_TYPE_ARM64, CPU_SUBTYPE_ARM64E, false, 2}, {CPU_TYPE_ARM64, CPU_SUBTYPE_ARM64_ALL, false, 1}} };
+#endif
 #if SUPPORT_ARCH_arm64e
 const GradedArchs GradedArchs::arm64e_keysoff    = { {{GRADE_arm64e,    2}, {GRADE_arm64, 1}} };
 const GradedArchs GradedArchs::arm64e_keysoff_pb = { {{GRADE_arm64e_pb, 2}, {GRADE_arm64, 1}} };
@@ -276,7 +280,10 @@ static bool isHaswell()
 
 const GradedArchs& GradedArchs::forCurrentOS(bool keysOff, bool osBinariesOnly)
 {
-#if __arm64e__
+#if defined(DARLING)
+    // DARLING arm64e compat: accept both arm64 and arm64e binaries
+    return arm64_darling;
+#elif __arm64e__
     if ( osBinariesOnly )
         return (keysOff ? arm64e_keysoff_pb : arm64e_pb);
     else

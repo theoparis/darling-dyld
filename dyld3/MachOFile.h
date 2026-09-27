@@ -143,6 +143,9 @@ public:
     static const GradedArchs armv7k;          // watch thru series 3
     static const GradedArchs armv7s;          // deprecated
     static const GradedArchs armv7;           // deprecated
+#if defined(DARLING)
+    static const GradedArchs arm64_darling;    // Darling: prefers arm64e, falls back to arm64
+#endif
 #if SUPPORT_ARCH_arm64_32
     static const GradedArchs arm64_32;        // watch series 4 and later
 #endif
